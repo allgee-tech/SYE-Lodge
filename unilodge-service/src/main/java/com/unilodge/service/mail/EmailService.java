@@ -10,6 +10,11 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.Duration;
 
 /**
@@ -24,6 +29,7 @@ public class EmailService {
 
     private final AppProperties properties;
     private final ObjectProvider<JavaMailSender> mailSenderProvider;
+    private final HttpClient httpClient = HttpClient.newHttpClient();
 
     public EmailService(AppProperties properties, ObjectProvider<JavaMailSender> mailSenderProvider) {
         this.properties = properties;
@@ -114,6 +120,10 @@ public class EmailService {
     }
 
     private void deliver(String to, String subject, String body) {
+        if (properties.getMail().isResendMode()) {
+            sendViaResend(to, subject, body);
+            return;
+        }
         if (properties.getMail().isConsoleMode()) {
             logToConsole(to, subject, body);
             return;
@@ -132,6 +142,44 @@ public class EmailService {
         message.setSubject(subject);
         message.setText(body);
         sender.send(message);
+    }
+
+    private void sendViaResend(String to, String subject, String body) {
+        String apiKey = properties.getMail().getApiKey();
+        if (!StringUtils.hasText(apiKey)) {
+            throw new IllegalStateException("Resend email mode is enabled but RESEND_API_KEY is missing.");
+        }
+        String payload = "{\"from\":\"" + json(properties.getMail().getFrom())
+                + "\",\"to\":[\"" + json(to) + "\"],\"subject\":\""
+                + json(subject) + "\",\"text\":\"" + json(body) + "\"}";
+        HttpRequest request = HttpRequest.newBuilder(URI.create(properties.getMail().getApiUrl()))
+                .header("Authorization", "Bearer " + apiKey)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(payload))
+                .build();
+        try {
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() < 200 || response.statusCode() >= 300) {
+                log.error("Resend rejected email delivery with HTTP {}: {}", response.statusCode(), response.body());
+                throw new IllegalStateException("Email provider rejected the message.");
+            }
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Email delivery was interrupted.", exception);
+        } catch (IOException exception) {
+            throw new IllegalStateException("Email provider could not be reached.", exception);
+        }
+    }
+
+    private String json(String value) {
+        if (value == null) {
+            return "";
+        }
+        return value.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\r", "\\r")
+                .replace("\n", "\\n")
+                .replace("\t", "\\t");
     }
 
     private boolean isConfigured(JavaMailSender sender) {

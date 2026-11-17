@@ -72,10 +72,12 @@ public class AppProperties {
     }
 
     public static class Mail {
-        /** "console" logs messages locally; "smtp" uses the configured mail server. */
+        /** "console" logs locally, "smtp" uses SMTP, and "resend" uses HTTPS. */
         private String mode = "console";
         private String from = "no-reply@unilodge.local";
         private String appUrl = "http://localhost:8080";
+        private String apiKey = "";
+        private String apiUrl = "https://api.resend.com/emails";
         /** Development only: echo OTP codes back in API responses. */
         private boolean exposeOtp = false;
 
@@ -103,6 +105,22 @@ public class AppProperties {
             this.appUrl = appUrl;
         }
 
+        public String getApiKey() {
+            return apiKey;
+        }
+
+        public void setApiKey(String apiKey) {
+            this.apiKey = apiKey;
+        }
+
+        public String getApiUrl() {
+            return apiUrl;
+        }
+
+        public void setApiUrl(String apiUrl) {
+            this.apiUrl = apiUrl;
+        }
+
         public boolean isExposeOtp() {
             return exposeOtp;
         }
@@ -112,7 +130,11 @@ public class AppProperties {
         }
 
         public boolean isConsoleMode() {
-            return !"smtp".equalsIgnoreCase(mode);
+            return !"smtp".equalsIgnoreCase(mode) && !isResendMode();
+        }
+
+        public boolean isResendMode() {
+            return "resend".equalsIgnoreCase(mode);
         }
     }
 

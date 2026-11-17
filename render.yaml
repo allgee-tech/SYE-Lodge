@@ -67,8 +67,9 @@ services:
         value: "true"
 
       # Free web services cannot send outbound SMTP (ports 25/465/587 are
-      # blocked), so emails and OTP codes go to the Render log. Replace this
-      # after upgrading to a paid instance and configuring MAIL_* variables.
+      # blocked). Console mode is the safe default until a HTTPS provider is
+      # configured. To deliver real email, set MAIL_MODE=resend and add the
+      # secret RESEND_API_KEY plus a verified MAIL_FROM in Render.
       - key: MAIL_MODE
         value: console
 
