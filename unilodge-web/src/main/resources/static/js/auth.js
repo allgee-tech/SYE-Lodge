@@ -175,7 +175,11 @@
         if (raw) {
             let candidate = raw;
             try { candidate = decodeURIComponent(raw); } catch (error) { /* keep raw */ }
-            if (!/^(?:[a-z]+:)?\/\//i.test(candidate) && !candidate.startsWith("//") && !candidate.startsWith("http")) {
+            // Only follow relative in-app paths after authentication. Reject every
+            // URI scheme (including javascript:, data:, and https:) and protocol-
+            // relative URLs so a crafted `next` value cannot redirect or execute
+            // content outside the UniLodge application.
+            if (!candidate.startsWith("//") && !/^[a-z][a-z0-9+.-]*:/i.test(candidate)) {
                 location.href = candidate;
                 return;
             }
