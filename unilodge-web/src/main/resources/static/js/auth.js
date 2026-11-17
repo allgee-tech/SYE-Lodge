@@ -21,8 +21,6 @@
     const otpField = document.getElementById("otp-field");
     const otpActions = document.getElementById("otp-actions");
     const loginOptions = document.getElementById("login-options");
-    const adminDivider = document.getElementById("admin-divider");
-    const adminLink = document.getElementById("admin-link");
     const toggleText = document.getElementById("auth-toggle-text");
     const toggle = document.getElementById("auth-toggle");
     const forgotLink = document.getElementById("forgot-link");
@@ -115,11 +113,6 @@
         otpField.hidden = true;
         otpActions.hidden = true;
         loginOptions.hidden = false;
-        // Keep registration focused on account creation. The administrator
-        // setup entry point belongs only on the normal sign-in screen, so the
-        // registration footer's only alternate action is "Sign in".
-        adminDivider.hidden = next !== "login";
-        adminLink.hidden = next !== "login";
         passwordInput.autocomplete = "current-password";
         passwordInput.required = true;
         emailInput.readOnly = false;
@@ -153,8 +146,6 @@
             setText(title, "Reset your password");
             setText(description, "We will email you a 6-digit code to confirm it is really you.");
             loginOptions.hidden = true;
-            adminDivider.hidden = true;
-            adminLink.hidden = true;
             emailInput.required = true;
             setStepDots(1);
             toggleText.innerHTML = 'Remembered it? <button class="auth-mode-toggle" type="button" id="auth-toggle">Back to sign in</button>';
