@@ -115,8 +115,11 @@
         otpField.hidden = true;
         otpActions.hidden = true;
         loginOptions.hidden = false;
-        adminDivider.hidden = false;
-        adminLink.hidden = false;
+        // Keep registration focused on account creation. The administrator
+        // setup entry point belongs only on the normal sign-in screen, so the
+        // registration footer's only alternate action is "Sign in".
+        adminDivider.hidden = next !== "login";
+        adminLink.hidden = next !== "login";
         passwordInput.autocomplete = "current-password";
         passwordInput.required = true;
         emailInput.readOnly = false;
