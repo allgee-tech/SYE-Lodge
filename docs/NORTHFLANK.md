@@ -1,8 +1,8 @@
-# Deploying UniLodge on Northflank (free, no card)
+# Deploying SYE Lodge on Northflank (free, no card)
 
 Northflank's **Sandbox** plan is a strong free alternative to Render: it needs
 no credit card, does not sleep, and includes 2 services, 1 database and up to
-`$20/month` of compute. UniLodge uses one service and one PostgreSQL addon, so
+`$20/month` of compute. SYE Lodge uses one service and one PostgreSQL addon, so
 it fits.
 
 | | Northflank Sandbox | Render Free | Oracle Always Free |
@@ -25,7 +25,7 @@ migrations on boot and serves the health endpoint `/api/universities`.
 
 1. Sign up at <https://app.northflank.com/signup> with GitHub. No payment
    method is requested for Sandbox.
-2. Create a project named `unilodge` and pick the **Europe (Frankfurt)**
+2. Create a project named `sye_lodge` and pick the **Europe (Frankfurt)**
    region. It is the closest region to Ghana and is available on Sandbox.
 3. Open the project's **Sandbox** usage page. It shows the monthly resource
    allowance and the projected cost, which is the number to watch.
@@ -33,7 +33,7 @@ migrations on boot and serves the health endpoint `/api/universities`.
 ## 2. Add PostgreSQL
 
 1. In the project choose **Add addon → PostgreSQL**.
-2. Name it `unilodge-db`, choose the smallest plan, and create it.
+2. Name it `sye-lodge-db`, choose the smallest plan, and create it.
 3. Open the addon and copy the **connection details**: host, port, database
    name, user and password. You will paste these into the service in step 4.
 
@@ -43,7 +43,7 @@ used locally and avoids Flyway's newer-server warning.
 ## 3. Create the application service
 
 1. **Create service → Build from repository** (or "Deploy from Git").
-2. Connect GitHub and select `La-Pulga-001/UniLodge`, branch `main`.
+2. Connect GitHub and select `La-Pulga-001/SYE Lodge`, branch `main`.
 3. Build type: **Dockerfile**. Build context `/`, Dockerfile `Dockerfile`.
 4. Compute plan: start with **0.5 vCPU / 1 GB**. If the build or boot is slow
    or the dashboard shows headroom, move to 1 vCPU / 2 GB. Keep the projected
@@ -69,8 +69,8 @@ DB_USERNAME=<addon user>
 DB_PASSWORD=<addon password>
 JWT_SECRET=<output of: openssl rand -base64 48>
 APP_URL=https://<public service address>
-DEMO_DATA=true
-MAIL_MODE=console
+DEMO_DATA=false
+MAIL_MODE=smtp
 JAVA_TOOL_OPTIONS=-XX:MaxRAMPercentage=70 -Djava.awt.headless=true
 ```
 
@@ -79,7 +79,7 @@ URL: `jdbc:postgresql://<host>:<port>/<database>?sslmode=require`.
 Plain `postgresql://` URLs are rejected by the JDBC driver.
 
 Redeploy after saving. The container starts as root only long enough to fix the
-uploads directory, then drops to the `unilodge` user, so no extra user setting
+uploads directory, then drops to the `sye_lodge` user, so no extra user setting
 is needed.
 
 ## 5. Public address and `APP_URL`
@@ -94,23 +94,23 @@ redeploy. HTTPS is terminated by Northflank, so Caddy is not used here.
 
 ## 6. Demo content and logins
 
-`DEMO_DATA=true` seeds 18 approved listings (**12** on the home page), one
+`DEMO_DATA=false` seeds 18 approved listings (**12** on the home page), one
 pending listing for the admin approval flow, student-board posts with comments,
 and five users. Seeding is idempotent: restarts add anything missing and
 regenerate demo photos lost with the container filesystem.
 
 | Role | Email | Password |
 | --- | --- | --- |
-| Student | `kwame.student@unilodge.test` | `Demo@1234` |
-| Student | `abena.student@unilodge.test` | `Demo@1234` |
-| Student | `yaw.student@unilodge.test` | `Demo@1234` |
-| Approved landlord | `ama.landlord@unilodge.test` | `Demo@1234` |
-| Pending landlord | `kofi.landlord@unilodge.test` | `Demo@1234` |
+| Student | `kwame.student@sye_lodge.test` | `YOUR_DEMO_PASSWORD` |
+| Student | `abena.student@sye_lodge.test` | `YOUR_DEMO_PASSWORD` |
+| Student | `yaw.student@sye_lodge.test` | `YOUR_DEMO_PASSWORD` |
+| Approved landlord | `ama.landlord@sye_lodge.test` | `YOUR_DEMO_PASSWORD` |
+| Pending landlord | `kofi.landlord@sye_lodge.test` | `YOUR_DEMO_PASSWORD` |
 
 ## 7. Email and administrators
 
-With `MAIL_MODE=console`, emails and OTP codes are written to the service log.
-Open **Logs** and search for `UniLodge mail (console transport)`.
+With `MAIL_MODE=smtp`, emails and OTP codes are written to the service log.
+Open **Logs** and search for `SYE Lodge mail (console transport)`.
 
 To send real email, set `MAIL_MODE=smtp` plus `MAIL_HOST`, `MAIL_PORT`,
 `MAIL_USERNAME`, `MAIL_PASSWORD` and `MAIL_FROM`. Any SMTP provider works

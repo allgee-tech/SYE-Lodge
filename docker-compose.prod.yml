@@ -6,20 +6,20 @@
 # Only Caddy publishes ports. PostgreSQL and the Spring Boot app stay on the
 # private Docker network.
 
-name: unilodge
+name: sye_lodge
 
 services:
   db:
     image: postgres:18-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_DB: unilodge
-      POSTGRES_USER: unilodge_app
+      POSTGRES_DB: sye_lodge
+      POSTGRES_USER: sye_lodge_app
       POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
     volumes:
-      - unilodge-db:/var/lib/postgresql/data
+      - sye-lodge-db:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U unilodge_app -d unilodge"]
+      test: ["CMD-SHELL", "pg_isready -U sye_lodge_app -d sye_lodge"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -35,24 +35,24 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: prod
       PORT: 8080
-      DB_URL: jdbc:postgresql://db:5432/unilodge
-      DB_USERNAME: unilodge_app
+      DB_URL: jdbc:postgresql://db:5432/sye_lodge
+      DB_USERNAME: sye_lodge_app
       DB_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
       JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
       APP_URL: ${APP_URL:?set APP_URL in .env}
-      DEMO_DATA: ${DEMO_DATA:-true}
-      MAIL_MODE: ${MAIL_MODE:-console}
+      DEMO_DATA: ${DEMO_DATA:-false}
+      MAIL_MODE: ${MAIL_MODE:-smtp}
       MAIL_HOST: ${MAIL_HOST:-}
       MAIL_PORT: ${MAIL_PORT:-587}
       MAIL_USERNAME: ${MAIL_USERNAME:-}
       MAIL_PASSWORD: ${MAIL_PASSWORD:-}
-      MAIL_FROM: "${MAIL_FROM:-UniLodge <no-reply@unilodge.local>}"
+      MAIL_FROM: "${MAIL_FROM:-SYE Lodge <no-reply@sye-lodge.local>}"
       CORS_ORIGINS: ${CORS_ORIGINS:-}
       # The demo seeder renders photos; cap the heap to fit the VM.
       JAVA_TOOL_OPTIONS: ${JAVA_TOOL_OPTIONS:--Djava.awt.headless=true -Xms128m -Xmx768m}
     volumes:
-      - unilodge-uploads:/app/uploads
-      - unilodge-logs:/app/logs
+      - sye-lodge-uploads:/app/uploads
+      - sye-lodge-logs:/app/logs
     expose:
       - "8080"
 
@@ -74,8 +74,8 @@ services:
       - caddy-config:/config
 
 volumes:
-  unilodge-db:
-  unilodge-uploads:
-  unilodge-logs:
+  sye-lodge-db:
+  sye-lodge-uploads:
+  sye-lodge-logs:
   caddy-data:
   caddy-config:

@@ -1,6 +1,6 @@
-# UniLodge.
+# SYE Lodge.
 
-UniLodge is a/an/ana/banger student-accommodation platform for Ghana. Students browse approved
+SYE Lodge is a/an/ana/banger student-accommodation platform for Ghana. Students browse approved
 listings near their university, compare rent and distance, save favourites,
 post roommate requests, comment, and contact landlords directly. Landlords
 publish listings after administrator approval. Administrators moderate
@@ -12,7 +12,7 @@ Greater Accra). Further institutions can be added from the admin workspace
 without redeploying.
 
 - Currency: Ghana cedi (GH₵)
-- Payments: none. UniLodge only provides direct call/WhatsApp/email contact.
+- Payments: none. SYE Lodge only provides direct call/WhatsApp/email contact.
 - Backend: Java 25, Spring Boot 3.5.6, PostgreSQL 18
 - Frontend: plain HTML, CSS and JavaScript served by Spring Boot (no build step)
 
@@ -21,10 +21,10 @@ without redeploying.
 ## 1. Repository layout
 
 ```
-unilodge-common/       enums, DTO records, shared exceptions and geo helpers
-unilodge-persistence/  JPA entities, repositories, specifications, Flyway SQL
-unilodge-service/      business logic: auth, OTP, email, storage, audit, admin
-unilodge-web/          Spring Boot app, REST controllers, security, static UI
+sye-lodge-common/       enums, DTO records, shared exceptions and geo helpers
+sye-lodge-persistence/  JPA entities, repositories, specifications, Flyway SQL
+sye-lodge-service/      business logic: auth, OTP, email, storage, audit, admin
+sye-lodge-web/          Spring Boot app, REST controllers, security, static UI
 docs/API.md            endpoint reference
 docs/DEPLOYMENT.md     Railway and Oracle Cloud deployment guide
 railway.json           Railway build/health-check configuration
@@ -104,15 +104,15 @@ migration path). [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) also covers
 Railway and Oracle Cloud Always Free, plus environment variables, the `APP_URL`
 setting used in email links, and the administrator setup flow.
 
-Demo accounts use the password `Demo@1234`:
+Demo accounts use the password `YOUR_DEMO_PASSWORD`:
 
 | Role | Email |
 | --- | --- |
-| Student | `kwame.student@unilodge.test` |
-| Student | `abena.student@unilodge.test` |
-| Student | `yaw.student@unilodge.test` |
-| Approved landlord | `ama.landlord@unilodge.test` |
-| Pending landlord | `kofi.landlord@unilodge.test` |
+| Student | `kwame.student@sye_lodge.test` |
+| Student | `abena.student@sye_lodge.test` |
+| Student | `yaw.student@sye_lodge.test` |
+| Approved landlord | `ama.landlord@sye_lodge.test` |
+| Pending landlord | `kofi.landlord@sye_lodge.test` |
 
 Set `DEMO_DATA=false` in production for an empty catalogue. The original
 administrators (`fblesselikem@gmail.com`, `ayensusamuel866@gmail.com`,

@@ -1,0 +1,28 @@
+# Local development profile.
+# Email is printed to the server log, OTP codes are echoed in API responses
+# (so the sign-up and reset flows can be tested without an inbox) and demo
+# listings/posts are seeded on first boot.
+spring:
+  jpa:
+    show-sql: false
+  flyway:
+    clean-disabled: false
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+app:
+  mail:
+    mode: console
+    app-url: http://localhost:8081
+    expose-otp: true
+  bootstrap:
+    demo-data: ${DEMO_DATA:false}
+
+logging:
+  level:
+    com.syelodge: DEBUG
+    org.hibernate.SQL: WARN

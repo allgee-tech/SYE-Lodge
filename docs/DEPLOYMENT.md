@@ -1,6 +1,6 @@
-# Deploying UniLodge
+# Deploying SYE Lodge
 
-UniLodge ships as a single Docker image (`Dockerfile`) plus a PostgreSQL
+SYE Lodge ships as a single Docker image (`Dockerfile`) plus a PostgreSQL
 database. Four hosting paths are supported:
 
 | Path | Cost | Effort | Best for |
@@ -26,15 +26,15 @@ The container reads the port from `PORT` and exposes a health check at
 
 1. Sign in at <https://railway.com> and choose **New Project → Deploy from
    GitHub repo**.
-2. Select `La-Pulga-001/UniLodge` and the `main` branch.
+2. Select `La-Pulga-001/SYE Lodge` and the `main` branch.
 3. Railway reads `railway.json`, builds the `Dockerfile` and creates the
-   `unilodge` service.
+   `sye_lodge` service.
 4. In the same project choose **New → Database → PostgreSQL**. Railway
    provisions a database service named `Postgres`.
 
 ### 1.2 Configure the application service
 
-Open **unilodge → Variables → Raw Editor** and paste the following, replacing
+Open **sye_lodge → Variables → Raw Editor** and paste the following, replacing
 `JWT_SECRET` with a fresh random value (`openssl rand -base64 48`):
 
 ```dotenv
@@ -46,8 +46,8 @@ DB_USERNAME=${{Postgres.PGUSER}}
 DB_PASSWORD=${{Postgres.PGPASSWORD}}
 JWT_SECRET=replace-with-at-least-32-random-characters
 APP_URL=https://your-service.up.railway.app
-DEMO_DATA=true
-MAIL_MODE=console
+DEMO_DATA=false
+MAIL_MODE=smtp
 ```
 
 Railway substitutes the `${{Postgres.*}}` references with the database
@@ -71,7 +71,7 @@ Flyway migrations and seeds the demo data, so it can take a couple of minutes.
 
 ### 1.4 Demo content
 
-`DEMO_DATA=true` seeds 18 approved listings (**12** on the home page), one
+`DEMO_DATA=false` seeds 18 approved listings (**12** on the home page), one
 pending listing for the admin approval flow, student-board posts with
 comments, and five demo users. Seeding is idempotent: restarting the service
 adds anything missing and regenerates demo photos lost with the container
@@ -79,19 +79,19 @@ filesystem.
 
 | Role | Email | Password |
 | --- | --- | --- |
-| Student | `kwame.student@unilodge.test` | `Demo@1234` |
-| Student | `abena.student@unilodge.test` | `Demo@1234` |
-| Student | `yaw.student@unilodge.test` | `Demo@1234` |
-| Approved landlord | `ama.landlord@unilodge.test` | `Demo@1234` |
-| Pending landlord | `kofi.landlord@unilodge.test` | `Demo@1234` |
+| Student | `kwame.student@sye_lodge.test` | `YOUR_DEMO_PASSWORD` |
+| Student | `abena.student@sye_lodge.test` | `YOUR_DEMO_PASSWORD` |
+| Student | `yaw.student@sye_lodge.test` | `YOUR_DEMO_PASSWORD` |
+| Approved landlord | `ama.landlord@sye_lodge.test` | `YOUR_DEMO_PASSWORD` |
+| Pending landlord | `kofi.landlord@sye_lodge.test` | `YOUR_DEMO_PASSWORD` |
 
 Set `DEMO_DATA=false` and redeploy for an empty production catalogue.
 
 ### 1.5 Email
 
-Without SMTP, `MAIL_MODE=console` writes emails — including OTP codes — to the
-service log. Open **unilodge → Logs** and search for
-`UniLodge mail (console transport)`.
+Without SMTP, `MAIL_MODE=smtp` writes emails — including OTP codes — to the
+service log. Open **sye_lodge → Logs** and search for
+`SYE Lodge mail (console transport)`.
 
 To send real email, set:
 
@@ -101,7 +101,7 @@ MAIL_HOST=smtp.gmail.com
 MAIL_PORT=587
 MAIL_USERNAME=your.address@gmail.com
 MAIL_PASSWORD=your-16-character-app-password
-MAIL_FROM=UniLodge <your.address@gmail.com>
+MAIL_FROM=SYE Lodge <your.address@gmail.com>
 ```
 
 Any SMTP provider works (Brevo, Resend, Mailgun, Zoho). Gmail needs 2-Step
@@ -147,7 +147,7 @@ verification, and Ampere A1 capacity is sometimes unavailable at peak times.
 ### 2.1 Create the VM
 
 1. In the OCI console open **Compute → Instances → Create instance**.
-2. Name it `unilodge`, choose **Canonical Ubuntu 24.04**, and select the
+2. Name it `sye_lodge`, choose **Canonical Ubuntu 24.04**, and select the
    **Ampere A1.Flex** shape with 2 OCPU / 12 GB (or 4 OCPU / 24 GB, still
    Always Free).
 3. Under **Networking**, assign a public IPv4 address and add your SSH public
@@ -164,8 +164,8 @@ verification, and Ampere A1 capacity is sometimes unavailable at peak times.
 ```bash
 ssh -i ~/.ssh/your-key ubuntu@<PUBLIC_IP>
 sudo apt-get update && sudo apt-get install -y git
-git clone https://github.com/La-Pulga-001/UniLodge.git
-cd UniLodge
+git clone https://github.com/La-Pulga-001/SYE Lodge.git
+cd SYE Lodge
 sudo bash deploy/oracle-setup.sh
 newgrp docker        # or log out and back in
 ```
@@ -188,11 +188,11 @@ Set at least:
 ```dotenv
 DB_PASSWORD=<generated>
 JWT_SECRET=<generated>
-SITE_ADDRESS=unilodge.<PUBLIC_IP>.sslip.io
+SITE_ADDRESS=sye_lodge.<PUBLIC_IP>.sslip.io
 ACME_EMAIL=you@example.com
-APP_URL=https://unilodge.<PUBLIC_IP>.sslip.io
-DEMO_DATA=true
-MAIL_MODE=console
+APP_URL=https://sye_lodge.<PUBLIC_IP>.sslip.io
+DEMO_DATA=false
+MAIL_MODE=smtp
 ```
 
 `sslip.io` is a free wildcard DNS service: the hostname above resolves to the
@@ -212,7 +212,7 @@ sudo docker compose -f docker-compose.prod.yml logs -f app
 ```
 
 The first build takes roughly 5–15 minutes on an A1 VM and longer on a micro
-instance. Wait for `Started UniLodgeApplication`, then open
+instance. Wait for `Started SYELodgeApplication`, then open
 `https://<SITE_ADDRESS>`. The first HTTPS request can take a few seconds while
 Caddy obtains the certificate.
 
@@ -225,10 +225,10 @@ survive redeploys.
 The demo accounts, 12 featured listings and student-board posts described in
 sections 1.4–1.6 work the same way. Open
 `https://<SITE_ADDRESS>/admin-setup.html` for the three original
-administrators. With `MAIL_MODE=console`, read the OTP codes from:
+administrators. With `MAIL_MODE=smtp`, read the OTP codes from:
 
 ```bash
-sudo docker compose -f docker-compose.prod.yml logs app | grep -A 12 "UniLodge mail"
+sudo docker compose -f docker-compose.prod.yml logs app | grep -A 12 "SYE Lodge mail"
 ```
 
 After configuring SMTP in `.env`, apply it with
@@ -237,7 +237,7 @@ After configuring SMTP in `.env`, apply it with
 ### 2.6 Updates
 
 ```bash
-cd ~/UniLodge
+cd ~/SYE Lodge
 git pull
 sudo docker compose -f docker-compose.prod.yml up -d --build
 ```
@@ -247,14 +247,14 @@ sudo docker compose -f docker-compose.prod.yml up -d --build
 `deploy/backup.sh` writes a compressed dump to `backups/` and keeps 14 days:
 
 ```bash
-cd ~/UniLodge
+cd ~/SYE Lodge
 bash deploy/backup.sh
 ```
 
 Schedule it daily with `crontab -e` (as `ubuntu`):
 
 ```cron
-15 3 * * * cd /home/ubuntu/UniLodge && bash deploy/backup.sh >> /home/ubuntu/unilodge-backup.log 2>&1
+15 3 * * * cd /home/ubuntu/SYE Lodge && bash deploy/backup.sh >> /home/ubuntu/sye-lodge-backup.log 2>&1
 ```
 
 Restore with the app stopped:
@@ -262,7 +262,7 @@ Restore with the app stopped:
 ```bash
 sudo docker compose -f docker-compose.prod.yml stop app
 sudo docker compose -f docker-compose.prod.yml exec -T db \
-  pg_restore -U unilodge_app -d unilodge --clean --if-exists < backups/unilodge-YYYY-MM-DD-HHMM.dump
+  pg_restore -U sye_lodge_app -d sye_lodge --clean --if-exists < backups/sye-lodge-YYYY-MM-DD-HHMM.dump
 sudo docker compose -f docker-compose.prod.yml start app
 ```
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Dump the UniLodge database from the production Compose stack.
+# Dump the SYE Lodge database from the production Compose stack.
 #
 #   sudo bash deploy/backup.sh
 #
-# Writes backups/unilodge-YYYY-MM-DD-HHMM.dump and keeps 14 days by default
+# Writes backups/sye-lodge-YYYY-MM-DD-HHMM.dump and keeps 14 days by default
 # (override with BACKUP_RETENTION_DAYS).
 set -euo pipefail
 
@@ -14,8 +14,8 @@ STAMP="$(date +%Y-%m-%d-%H%M)"
 mkdir -p backups
 
 docker compose -f docker-compose.prod.yml exec -T db \
-    pg_dump -U unilodge_app -d unilodge -Fc > "backups/unilodge-${STAMP}.dump"
+    pg_dump -U sye_lodge_app -d sye_lodge -Fc > "backups/sye-lodge-${STAMP}.dump"
 
-find backups -type f -name 'unilodge-*.dump' -mtime +"${RETENTION_DAYS}" -delete
+find backups -type f -name 'sye-lodge-*.dump' -mtime +"${RETENTION_DAYS}" -delete
 
-echo "Backup written to backups/unilodge-${STAMP}.dump"
+echo "Backup written to backups/sye-lodge-${STAMP}.dump"

@@ -1,4 +1,4 @@
-# UniLodge API reference
+# SYE Lodge API reference
 
 Base URL: `http://localhost:8081` (development). All paths are prefixed with
 `/api`. Responses are JSON unless noted.
@@ -74,7 +74,7 @@ List endpoints return:
 | `InvitationStatus` | `PENDING`, `ACCEPTED`, `REVOKED`, `EXPIRED` |
 | `AuditAction` | see the audit endpoint response |
 
-The exact enum lists are defined in `unilodge-common/src/main/java/com/unilodge/common/enums`.
+The exact enum lists are defined in `sye-lodge-common/src/main/java/com/syelodge/common/enums`.
 
 ### Date and money formats
 
@@ -569,7 +569,7 @@ and returns an invitation row. The invitation link is
 ```
 
 The full `AuditAction` list lives in
-`unilodge-common/src/main/java/com/unilodge/common/enums/AuditAction.java`.
+`sye-lodge-common/src/main/java/com/syelodge/common/enums/AuditAction.java`.
 
 ---
 
@@ -579,7 +579,7 @@ The full `AuditAction` list lives in
 # Sign in
 curl -s -X POST http://localhost:8081/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"kwame.student@unilodge.test","password":"Demo@1234"}'
+  -d '{"email":"kwame.student@sye_lodge.test","password":"YOUR_DEMO_PASSWORD"}'
 
 # Search approved listings
 curl -s "http://localhost:8081/api/properties?universityId=UUID&sort=rent_asc&maxRent=2000"

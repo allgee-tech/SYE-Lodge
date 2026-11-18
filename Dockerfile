@@ -7,15 +7,15 @@ COPY pom.xml .
 COPY .mvn .mvn
 COPY mvnw mvnw
 COPY mvnw.cmd mvnw.cmd
-COPY unilodge-common/pom.xml unilodge-common/pom.xml
-COPY unilodge-persistence/pom.xml unilodge-persistence/pom.xml
-COPY unilodge-service/pom.xml unilodge-service/pom.xml
-COPY unilodge-web/pom.xml unilodge-web/pom.xml
+COPY sye-lodge-common/pom.xml sye-lodge-common/pom.xml
+COPY sye-lodge-persistence/pom.xml sye-lodge-persistence/pom.xml
+COPY sye-lodge-service/pom.xml sye-lodge-service/pom.xml
+COPY sye-lodge-web/pom.xml sye-lodge-web/pom.xml
 RUN mvn -B -DskipTests dependency:go-offline
-COPY unilodge-common/src unilodge-common/src
-COPY unilodge-persistence/src unilodge-persistence/src
-COPY unilodge-service/src unilodge-service/src
-COPY unilodge-web/src unilodge-web/src
+COPY sye-lodge-common/src sye-lodge-common/src
+COPY sye-lodge-persistence/src sye-lodge-persistence/src
+COPY sye-lodge-service/src sye-lodge-service/src
+COPY sye-lodge-web/src sye-lodge-web/src
 RUN mvn -B -DskipTests package
 
 # ---- Runtime stage ---------------------------------------------------------
@@ -25,16 +25,16 @@ WORKDIR /app
 RUN apt-get update \
     && apt-get install -y --no-install-recommends fontconfig fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/* \
-    && groupadd --system unilodge && useradd --system --gid unilodge unilodge \
-    && mkdir -p /app/uploads /app/logs && chown -R unilodge:unilodge /app
+    && groupadd --system sye_lodge && useradd --system --gid sye_lodge sye_lodge \
+    && mkdir -p /app/uploads /app/logs && chown -R sye_lodge:sye_lodge /app
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod 0755 /usr/local/bin/docker-entrypoint.sh
-COPY --from=build /workspace/unilodge-web/target/unilodge-web-1.0.0.jar /app/unilodge.jar
+COPY --from=build /workspace/sye-lodge-web/target/sye-lodge-web-1.0.0.jar /app/sye_lodge.jar
 EXPOSE 8080
 ENV SPRING_PROFILES_ACTIVE=prod \
     PORT=8080 \
     UPLOAD_DIR=/app/uploads \
-    LOG_FILE=/app/logs/unilodge.log \
+    LOG_FILE=/app/logs/sye_lodge.log \
     JAVA_TOOL_OPTIONS="-Djava.awt.headless=true"
-# Starts as root, fixes mounted-disk ownership, then drops to "unilodge".
+# Starts as root, fixes mounted-disk ownership, then drops to "sye_lodge".
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

@@ -11,19 +11,19 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.unilodge</groupId>
-    <artifactId>unilodge-parent</artifactId>
+    <groupId>com.syelodge</groupId>
+    <artifactId>sye-lodge-parent</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
 
-    <name>UniLodge</name>
+    <name>SYE Lodge</name>
     <description>Student accommodation marketplace for Ghana</description>
 
     <modules>
-        <module>unilodge-common</module>
-        <module>unilodge-persistence</module>
-        <module>unilodge-service</module>
-        <module>unilodge-web</module>
+        <module>sye-lodge-common</module>
+        <module>sye-lodge-persistence</module>
+        <module>sye-lodge-service</module>
+        <module>sye-lodge-web</module>
     </modules>
 
     <properties>
@@ -37,18 +37,18 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.unilodge</groupId>
-                <artifactId>unilodge-common</artifactId>
+                <groupId>com.syelodge</groupId>
+                <artifactId>sye-lodge-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.unilodge</groupId>
-                <artifactId>unilodge-persistence</artifactId>
+                <groupId>com.syelodge</groupId>
+                <artifactId>sye-lodge-persistence</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.unilodge</groupId>
-                <artifactId>unilodge-service</artifactId>
+                <groupId>com.syelodge</groupId>
+                <artifactId>sye-lodge-service</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

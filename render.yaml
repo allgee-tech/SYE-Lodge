@@ -1,7 +1,7 @@
-# Render Blueprint for UniLodge.
+# Render Blueprint for SYE Lodge.
 #
 # One-click deploy:
-#   https://render.com/deploy?repo=https://github.com/La-Pulga-001/UniLodge
+#   https://render.com/deploy?repo=https://github.com/La-Pulga-001/SYE Lodge
 #
 # Creates one free Docker web service and one free Render Postgres database in
 # Frankfurt (the closest Render region to Ghana). Free-plan limits, the 30-day
@@ -12,9 +12,9 @@
 # fields are wired in instead.
 
 databases:
-  - name: unilodge-db
-    databaseName: unilodge
-    user: unilodge_app
+  - name: sye-lodge-db
+    databaseName: sye_lodge
+    user: sye_lodge_app
     plan: free
     region: frankfurt
     # 17 is the newest version Flyway supports without a compatibility warning.
@@ -22,7 +22,7 @@ databases:
 
 services:
   - type: web
-    name: unilodge
+    name: sye_lodge
     runtime: docker
     plan: free
     region: frankfurt
@@ -37,23 +37,23 @@ services:
       # The application assembles the JDBC URL from these values.
       - key: DB_HOST
         fromDatabase:
-          name: unilodge-db
+          name: sye-lodge-db
           property: host
       - key: DB_PORT
         fromDatabase:
-          name: unilodge-db
+          name: sye-lodge-db
           property: port
       - key: DB_NAME
         fromDatabase:
-          name: unilodge-db
+          name: sye-lodge-db
           property: database
       - key: DB_USERNAME
         fromDatabase:
-          name: unilodge-db
+          name: sye-lodge-db
           property: user
       - key: DB_PASSWORD
         fromDatabase:
-          name: unilodge-db
+          name: sye-lodge-db
           property: password
 
       # Render generates a long random signing secret on first apply and keeps
@@ -62,9 +62,9 @@ services:
         generateValue: true
 
       # Seed the demo accounts, 18 sample listings and student-board posts.
-      # Demo logins use the password Demo@1234; see docs/RENDER.md.
+      # Demo data is disabled by default for safer deployments; see docs/RENDER.md to enable it.
       - key: DEMO_DATA
-        value: "true"
+        value: "false"
 
       # Free web services cannot send outbound SMTP (ports 25/465/587 are
       # blocked). Console mode is the safe default until a HTTPS provider is
@@ -83,4 +83,4 @@ services:
       # RENDER_EXTERNAL_URL, so links use the correct https:// address.
       # Uncomment this after attaching a custom domain:
       # - key: APP_URL
-      #   value: https://unilodge.example.com
+      #   value: https://sye_lodge.example.com
